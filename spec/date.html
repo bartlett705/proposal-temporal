@@ -67,7 +67,20 @@
       <emu-alg>
         1. Let _overflow_ be ? ToTemporalOverflow(_options_).
         1. If Type(_item_) is Object, then
-          1. Let _result_ be ? ToTemporalDateRecord(_item_).
+          1. If _temporalDateLike_ has an [[InitializedTemporalDate]] internal slot, then
+            1. Let _result_ be {
+                [[Day]]: _temporalDateLike_.[[ISODay]],
+                [[Year]]: _temporalDateLike_.[[ISOYear]],
+                [[Month]]: _temporalDateLike_.[[ISOMonth]],
+                [[Calendar]]: _temporalDateLike_.[[Calendar]]
+              }.
+          1. Else,
+            1. Let _result_ be ? ToTemporalDateRecord(_item_).
+            1. If _result_.[[Calendar]] is *undefined*, then
+              1. Let _calendar_ be ! GetDefaultCalendar().
+            1. Else,
+              1. Let _calendar_ be _result_.[[Calendar]].
+            1. Let _result_ be `calendar.dateFromFields(item, options, this)`.
         1. Else,
           1. Let _string_ be ? ToString(_item_).
           1. Let _result_ be ? ParseTemporalDateString(_string_).
@@ -640,19 +653,16 @@
       <h1>ToTemporalDateRecord ( _temporalDateLike_ )</h1>
       <emu-alg>
         1. Assert: Type(_temporalDateLike_) is Object.
-        1. If _temporalDateLike_ has an [[InitializedTemporalDate]] internal slot, then
-          1. Return the Record {
-              [[Year]]: _temporalDateLike_.[[Year]],
-              [[Month]]: _temporalDateLike_.[[Month]],
-              [[Day]]: _temporalDateLike_.[[Day]],
-            }.
         1. Let _result_ be a new Record with all the internal slots given in the Internal Slot column in <emu-xref href="#table-temporal-temporaldatelike-properties"></emu-xref>.
         1. For each row of <emu-xref href="#table-temporal-temporaldatelike-properties"></emu-xref>, except the header row, in table order, do
           1. Let _property_ be the Property value of the current row.
           1. Let _value_ be ? Get(_temporalDateLike_, _property_).
+          1. Let _required_ be the Required value of the current row.
           1. If _value_ is *undefined*, then
-            1. Throw a *TypeError* exception.
-          1. Let _value_ be ? ToInteger(_value_).
+            1. If _required_ is ~required~, then
+              1. Throw a *TypeError* exception.
+          1. Let _conversion_ be the Conversion value of the current row.
+          1. Let _value_ be ? TemporalConvert(_value_, _conversion_).
           1. Set _result_'s internal slot whose name is the Internal Slot value of the current row to _value_.
         1. Return _result_.
       </emu-alg>
@@ -688,20 +698,40 @@
             <tr>
               <th>Internal Slot</th>
               <th>Property</th>
+              <th>Required</th>
+              <th>Conversion</th>
             </tr>
           </thead>
           <tbody>
             <tr>
+              <td>[[Calendar]]</td>
+              <td>`"calendar"`</td>
+              <td>~optional~</td>
+              <td>~calendar~</td>
+            </tr>
+            <tr>
               <td>[[Day]]</td>
               <td>`"day"`</td>
+              <td>~required~</td>
+              <td>~integer~</td>
+            </tr>
+            <tr>
+              <td>[[Era]]</td>
+              <td>`"era"`</td>
+              <td>~optional~</td>
+              <td>~string~</td>
             </tr>
             <tr>
               <td>[[Month]]</td>
               <td>`"month"`</td>
+              <td>~required~</td>
+              <td>~integer~</td>
             </tr>
             <tr>
               <td>[[Year]]</td>
               <td>`"year"`</td>
+              <td>~required~</td>
+              <td>~integer~</td>
             </tr>
           </tbody>
         </table>

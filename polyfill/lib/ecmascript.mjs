@@ -110,6 +110,15 @@ export const ES = ObjectAssign({}, ES2019, {
     const millisecond = ES.ToInteger(fraction.slice(0, 3));
     const microsecond = ES.ToInteger(fraction.slice(3, 6));
     const nanosecond = ES.ToInteger(fraction.slice(6, 9));
+    /* TODO:
+      1. If _month_ &lt; 1 or _month_ &gt; 12, then
+        1. Throw a *RangeError* exception.
+      1. Let _maxDay_ be ! DaysInMonth(_year_, _month_).
+      1. If _day_ &lt; 1 or _day_ &gt; _maxDay_, then
+        1. Throw a *RangeError* exception.
+      1. If ! ValidateTime(_hour_, _minute_, _second_, _millisecond_, _microsecond_, _nanosecond_) is *false*, then
+        1. Throw a *RangeError* exception.
+    */
     const offsetSign = match[14] === '-' || match[14] === '\u2212' ? '-' : '+';
     const offset = `${offsetSign}${match[15] || '00'}:${match[16] || '00'}`;
     let ianaName = match[17];
@@ -532,7 +541,7 @@ export const ES = ObjectAssign({}, ES2019, {
         const TemporalCalendar = GetIntrinsic('%Temporal.Calendar%');
         result.calendar = TemporalCalendar.from(value);
       } else if (property === 'era') {
-        result.era = value;
+        result.era = ES.ToString(value);
       } else {
         result[property] = ES.ToInteger(value);
       }
