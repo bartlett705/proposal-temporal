@@ -22,14 +22,13 @@ import {
 const ObjectAssign = Object.assign;
 
 export class Date {
-  constructor(isoYear, isoMonth, isoDay, calendar = undefined) {
+  constructor(isoYear, isoMonth, isoDay, calendar = GetDefaultCalendar()) {
     isoYear = ES.ToInteger(isoYear);
     isoMonth = ES.ToInteger(isoMonth);
     isoDay = ES.ToInteger(isoDay);
-    if (calendar === undefined) calendar = GetDefaultCalendar();
+    calendar = ES.ToTemporalCalendar(calendar);
     ES.RejectDate(isoYear, isoMonth, isoDay);
     ES.RejectDateRange(isoYear, isoMonth, isoDay);
-    if (!calendar || typeof calendar !== 'object') throw new RangeError('invalid calendar');
     CreateSlots(this);
     SetSlot(this, ISO_YEAR, isoYear);
     SetSlot(this, ISO_MONTH, isoMonth);
@@ -251,16 +250,14 @@ export class Date {
         const calendar = GetSlot(item, CALENDAR);
         result = new this(year, month, day, calendar);
       } else {
-        let calendar = item.calendar;
-        if (calendar === undefined) calendar = GetDefaultCalendar();
-        calendar = TemporalCalendar.from(calendar);
-        result = calendar.dateFromFields(item, options, this);
+        const fields = ES.ToTemporalDateRecord(item);
+        if (fields.calendar === undefined) fields.calendar = GetDefaultCalendar();
+        result = calendar.dateFromFields(fields, { overflow }, this);
       }
     } else {
       let { year, month, day, calendar } = ES.ParseTemporalDateString(ES.ToString(item));
       ({ year, month, day } = ES.RegulateDate(year, month, day, overflow));
       if (!calendar) calendar = GetDefaultCalendar();
-      calendar = TemporalCalendar.from(calendar);
       result = new this(year, month, day, calendar);
     }
     if (!ES.IsTemporalDate(result)) throw new TypeError('invalid result');

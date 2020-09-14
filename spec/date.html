@@ -16,7 +16,7 @@
     </ul>
 
     <emu-clause id="sec-temporal.date">
-      <h1>Temporal.Date ( _isoYear_, _isoMonth_, _isoDay_ )</h1>
+      <h1>Temporal.Date ( _isoYear_, _isoMonth_, _isoDay_ [ , _calendarLike_ ] )</h1>
       <p>
         When the `Temporal.Date` function is called, the following steps are taken:
       </p>
@@ -26,7 +26,11 @@
         1. Let _y_ be ? ToInteger(_isoYear_).
         1. Let _m_ be ? ToInteger(_isoMonth_).
         1. Let _d_ be ? ToInteger(_isoDay_).
-        1. Return ? CreateTemporalDate(_y_, _m_, _d_, NewTarget).
+        1. If _calendarLike_ is *undefined*, then
+          1. Let _calendar_ be ! GetDefaultCalendar().
+        1. Else,
+          1. Let _calendar_ be ? ToTemporalCalendar(_calendarLike_).
+        1. Return ? CreateTemporalDate(_y_, _m_, _d_, _calendar_, NewTarget).
       </emu-alg>
     </emu-clause>
   </emu-clause>
@@ -65,6 +69,7 @@
         The following steps are taken:
       </p>
       <emu-alg>
+        1. Let _constructor_ be the *this* value.
         1. Let _overflow_ be ? ToTemporalOverflow(_options_).
         1. If Type(_item_) is Object, then
           1. If _temporalDateLike_ has an [[InitializedTemporalDate]] internal slot, then
@@ -75,16 +80,13 @@
                 [[Calendar]]: _temporalDateLike_.[[Calendar]]
               }.
           1. Else,
-            1. Let _result_ be ? ToTemporalDateRecord(_item_).
-            1. If _result_.[[Calendar]] is *undefined*, then
-              1. Let _calendar_ be ! GetDefaultCalendar().
-            1. Else,
-              1. Let _calendar_ be _result_.[[Calendar]].
-            1. Let _result_ be `calendar.dateFromFields(item, options, this)`.
+            1. Let _fields_ be ? ToTemporalDateRecord(_item_).
+            1. If _fields_.[[Calendar]] is *undefined*, then
+              1. Set _fields_.[[Calendar]] to ! GetDefaultCalendar().
+            1. Return ? DateFromFields(_fields_, _overflow_, _constructor_).
         1. Else,
           1. Let _string_ be ? ToString(_item_).
           1. Let _result_ be ? ParseTemporalDateString(_string_).
-        1. Let _constructor_ be the *this* value.
         1. Set _result_ to ? RegulateDate(_result_.[[Year]], _result_.[[Month]], _result_.[[Day]], _overflow_).
         1. Return ? CreateTemporalDateFromStatic(_constructor_, _result_.[[Year]], _result_.[[Month]], _result_.[[Day]]).
       </emu-alg>
@@ -551,7 +553,7 @@
     <h1>Abstract Operations for Temporal.Date Objects</h1>
 
     <emu-clause id="sec-temporal-createtemporaldate" aoid="CreateTemporalDate">
-      <h1>CreateTemporalDate ( _isoYear_, _isoMonth_, _isoDay_ [ , _newTarget_ ] )</h1>
+      <h1>CreateTemporalDate ( _isoYear_, _isoMonth_, _isoDay_, _calendar_ [ , _newTarget_ ] )</h1>
       <emu-alg>
         1. Perform ? RejectDate(_isoYear_, _isoMonth_, _isoDay_).
         1. If ! DateTimeWithinLimits(_isoYear_, _isoMonth_, _isoDay_, 12, 0, 0, 0, 0, 0) is not ~in range~, then
@@ -561,7 +563,7 @@
         1. Set _object_.[[ISOYear]] to _isoYear_.
         1. Set _object_.[[ISOMonth]] to _isoMonth_.
         1. Set _object_.[[ISODay]] to _isoDay_.
-        1. <mark>TODO: Set it to the correct calendar.</mark> Set _object_.[[Calendar]] to ! GetDefaultCalendar().
+        1. Set _object_.[[Calendar]] to _calendar_.
         1. Return _object_.
       </emu-alg>
       <emu-note>
@@ -570,24 +572,24 @@
     </emu-clause>
 
     <emu-clause id="sec-temporal-createtemporaldatefrominstance" aoid="CreateTemporalDateFromInstance">
-      <h1>CreateTemporalDateFromInstance ( _temporalDate_, _isoYear_, _isoMonth_, _isoDay_ )</h1>
+      <h1>CreateTemporalDateFromInstance ( _temporalDate_, _isoYear_, _isoMonth_, _isoDay_, _calendar_ )</h1>
       <emu-alg>
         1. Assert: Type(_temporalDate_) is Object and _temporalDate_ has an [[InitializedTemporalDate]] internal slot.
         1. Assert: ! ValidateDate(_isoYear_, _isoMonth_, _isoDay_) is *true*.
         1. Let _constructor_ be ? SpeciesConstructor(_temporalDate_, %Temporal.Date%).
-        1. Let _result_ be ? Construct(_constructor_, « _isoYear_, _isoMonth_, _isoDay_ »).
+        1. Let _result_ be ? Construct(_constructor_, « _isoYear_, _isoMonth_, _isoDay_, _calendar_ »).
         1. Perform ? RequireInternalSlot(_result_, [[InitializedTemporalDate]]).
         1. Return _result_.
       </emu-alg>
     </emu-clause>
 
     <emu-clause id="sec-temporal-createtemporaldatefromstatic" aoid="CreateTemporalDateFromStatic">
-      <h1>CreateTemporalDateFromStatic ( _constructor_, _year_, _month_, _day_ )</h1>
+      <h1>CreateTemporalDateFromStatic ( _constructor_, _isoYear_, _isoMonth_, _isoDay_, _calendar_ )</h1>
       <emu-alg>
-        1. Assert: ! ValidateDate(_year_, _month_, _day_) is *true*.
+        1. Assert: ! ValidateDate(_isoYear_, _isoMonth_, _isoDay_) is *true*.
         1. If ! IsConstructor(_constructor_) is *false*, then
           1. Throw a *TypeError* exception.
-        1. Let _result_ be ? Construct(_constructor_, « _year_, _month_, _day_ »).
+        1. Let _result_ be ? Construct(_constructor_, « _isoYear_, _isoMonth_, _isoDay_, _calendar_ »).
         1. Perform ? RequireInternalSlot(_result_, [[InitializedTemporalDate]]).
         1. Return _result_.
       </emu-alg>

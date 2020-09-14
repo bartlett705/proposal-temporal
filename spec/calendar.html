@@ -54,6 +54,19 @@
         1. Return _calendar_.
       </emu-alg>
     </emu-clause>
+
+    <emu-clause id="sec-temporal-datefromfields" aoid="DateFromFields">
+      <h1>DateFromFields ( _fields_, _overflow_, _constructor_ )</h1>
+      <emu-alg>
+        1. Assert: Type(_fields_.[[Calendar]]) is Object.
+        1. Let _dateFromFields_ be ? Get(_fields_.[[Calendar]], *"dateFromFields"*).
+        1. Let _options_ be ! ObjectCreate(%Object.prototype%).
+        1. Perform ! CreateDataPropertyOrThrow(_options_, *"overflow"*, _overflow_).
+        1. Let _date_ be ? Call(_dateFromFields_, _fields_.[[Calendar]], « _fields_, _options_, _constructor_ »).
+        1. Perform ? RequireInternalSlot(_date_, [[InitializedTemporalDate]]).
+        1. Return _date_.
+      </emu-alg>
+    </emu-clause>
   </emu-clause>
 
   <emu-clause id="sec-temporal-calendar-constructor">
