@@ -164,7 +164,7 @@ export class Date {
     if (!ES.IsTemporalDate(other)) throw new TypeError('invalid Date object');
     const calendar = GetSlot(this, CALENDAR);
     const otherCalendar = GetSlot(other, CALENDAR);
-    if (calendar.id !== otherCalendar.id) {
+    if (ES.CalendarToString(calendar) !== ES.CalendarToString(otherCalendar)) {
       throw new RangeError(
         `cannot compute difference between dates of ${calendar.id} and ${otherCalendar.id} calendars`
       );
@@ -179,7 +179,7 @@ export class Date {
       const val2 = GetSlot(other, slot);
       if (val1 !== val2) return false;
     }
-    return GetSlot(this, CALENDAR).id === GetSlot(other, CALENDAR).id;
+    return ES.CalendarToString(GetSlot(this, CALENDAR)) === ES.CalendarToString(GetSlot(other, CALENDAR));
   }
   toString() {
     if (!ES.IsTemporalDate(this)) throw new TypeError('invalid receiver');
@@ -220,16 +220,18 @@ export class Date {
     const YearMonth = GetIntrinsic('%Temporal.YearMonth%');
     const calendar = GetSlot(this, CALENDAR);
     const fields = ES.ToTemporalDateRecord(this);
-    // FIXME: verify result is a YearMonth
-    return calendar.yearMonthFromFields(fields, {}, YearMonth);
+    const yearMonth = calendar.yearMonthFromFields(fields, {}, YearMonth);
+    if (!ES.IsTemporalYearMonth(yearMonth)) throw new TypeError('invalid result');
+    return yearMonth;
   }
   toMonthDay() {
     if (!ES.IsTemporalDate(this)) throw new TypeError('invalid receiver');
     const MonthDay = GetIntrinsic('%Temporal.MonthDay%');
     const calendar = GetSlot(this, CALENDAR);
     const fields = ES.ToTemporalDateRecord(this);
-    // FIXME: verify result is a MonthDay
-    return calendar.monthDayFromFields(fields, {}, MonthDay);
+    const monthDay = calendar.monthDayFromFields(fields, {}, MonthDay);
+    if (!ES.IsTemporalMonthDay(monthDay)) throw new TypeError('invalid result');
+    return monthDay;
   }
   getFields() {
     if (!ES.IsTemporalDate(this)) throw new TypeError('invalid receiver');
@@ -279,8 +281,9 @@ export class Date {
       const val2 = GetSlot(two, slot);
       if (val1 !== val2) return ES.ComparisonResult(val1 - val2);
     }
-    const cal1 = GetSlot(one, CALENDAR).id;
-    const cal2 = GetSlot(two, CALENDAR).id;
+    // FIXME: calendar comparison is not in spec
+    const cal1 = ES.CalendarToString(GetSlot(one, CALENDAR));
+    const cal2 = ES.CalendarToString(GetSlot(two, CALENDAR));
     return ES.ComparisonResult(cal1 < cal2 ? -1 : cal1 > cal2 ? 1 : 0);
   }
 }

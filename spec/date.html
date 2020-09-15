@@ -3,8 +3,9 @@
 
 <emu-clause id="sec-temporal-date-objects">
   <h1>Temporal.Date Objects</h1>
-  <p>A Temporal.Date object is an immutable Object that contains Number values corresponding to a particular year, month,
-    and day.</p>
+  <p>A Temporal.Date object is an immutable Object that contains Number values corresponding to a
+    particular year, month, and day in the ISO8601 calendar, as well as an Object value used to
+    interpret those Number values in a particular calendar.</p>
 
   <emu-clause id="sec-temporal-date-constructor">
     <h1>The Temporal.Date Constructor</h1>
@@ -74,9 +75,9 @@
         1. If Type(_item_) is Object, then
           1. If _temporalDateLike_ has an [[InitializedTemporalDate]] internal slot, then
             1. Let _result_ be {
-                [[Day]]: _temporalDateLike_.[[ISODay]],
                 [[Year]]: _temporalDateLike_.[[ISOYear]],
                 [[Month]]: _temporalDateLike_.[[ISOMonth]],
+                [[Day]]: _temporalDateLike_.[[ISODay]],
                 [[Calendar]]: _temporalDateLike_.[[Calendar]]
               }.
           1. Else,
@@ -119,7 +120,7 @@
 
     <emu-clause id="sec-temporal.date.prototype.constructor">
       <h1>Temporal.Date.prototype.constructor</h1>
-      <p>The initial value of Temporal.Date.prototype.constructor is %Temporal.Date%.</p>
+      <p>The initial value of `Temporal.Date.prototype.constructor` is %Temporal.Date%.</p>
     </emu-clause>
 
     <emu-clause id="sec-temporal.date.prototype-@@tostringtag">
@@ -157,6 +158,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"year"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -172,6 +174,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"month"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -187,6 +190,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"day"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -202,6 +206,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"dayOfWeek"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -217,6 +222,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"dayOfYear"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -232,6 +238,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"weekOfYear"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -247,6 +254,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"daysInWeek"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -262,6 +270,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"daysInYear"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -277,6 +286,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"daysInMonth"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -292,6 +302,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"monthsInYear"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToInteger?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -307,6 +318,7 @@
         1. Let _calendar_ be _temporalDate_.[[Calendar]].
         1. Let _method_ be ? Get(_calendar_, *"isLeapYear"*).
         1. Return ? Call(_method_, _calendar_, « _temporalDate_ »).
+        1. <mark>TODO: Should this call ToBoolean?.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -356,10 +368,10 @@
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
         1. Let _fields_ be ? ObjectCreate(%ObjectPrototype%).
-        1. Perform ! CreateDataPropertyOrThrow(_fields_, *"isoYear"*, _temporalDate_.[[ISOYear]]).
-        1. Perform ! CreateDataPropertyOrThrow(_fields_, *"isoMonth"*, _temporalDate_.[[ISOMonth]]).
-        1. Perform ! CreateDataPropertyOrThrow(_fields_, *"isoDay"*, _temporalDate_.[[ISODay]]).
         1. Perform ! CreateDataPropertyOrThrow(_fields_, *"calendar"*, _temporalDate_.[[Calendar]]).
+        1. Perform ! CreateDataPropertyOrThrow(_fields_, *"isoDay"*, _temporalDate_.[[ISODay]]).
+        1. Perform ! CreateDataPropertyOrThrow(_fields_, *"isoMonth"*, _temporalDate_.[[ISOMonth]]).
+        1. Perform ! CreateDataPropertyOrThrow(_fields_, *"isoYear"*, _temporalDate_.[[ISOYear]]).
         1. Return _fields_.
       </emu-alg>
     </emu-clause>
@@ -374,7 +386,7 @@
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
         1. Let _duration_ be ? ToLimitedTemporalDuration(_temporalDurationLike_, « »).
-        1. Perform ? RejectDurationSign(_duration_.[[Years]], _duration.[[Months]], _duration_.[[Weeks]], _duration_.[[Days]], _duration_.[[Hours]], _duration_.[[Minutes]], _duration_.[[Seconds]], _duration_.[[Milliseconds]], _duration_.[[Microseconds]], _duration_.[[Nanoseconds]]).
+        1. Perform ? RejectDurationSign(_duration_.[[Years]], _duration_.[[Months]], _duration_.[[Weeks]], _duration_.[[Days]], _duration_.[[Hours]], _duration_.[[Minutes]], _duration_.[[Seconds]], _duration_.[[Milliseconds]], _duration_.[[Microseconds]], _duration_.[[Nanoseconds]]).
         1. Let _balanceResult_ be ? BalanceDuration(_duration_.[[Days]], _duration_.[[Hours]], _duration_.[[Minutes]], _duration_.[[Seconds]], _duration_.[[Milliseconds]], _duration_.[[Microseconds]], _duration_.[[Nanoseconds]], *"days"*).
         1. Let _overflow_ be ? ToTemporalOverflow(_options_).
         1. Let _result_ be ? AddDate(_temporalDate_.[[ISOYear]], _temporalDate_.[[ISOMonth]], _temporalDate_.[[ISODay]], _duration_.[[Years]], _duration_.[[Months]], _duration_.[[Weeks]], _balanceResult_.[[Days]], _overflow_).
@@ -393,7 +405,7 @@
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
         1. Let _duration_ be ? ToLimitedTemporalDuration(_temporalDurationLike_, « »).
-        1. Perform ? RejectDurationSign(_duration_.[[Years]], _duration.[[Months]], _duration_.[[Weeks]], _duration_.[[Days]], _duration_.[[Hours]], _duration_.[[Minutes]], _duration_.[[Seconds]], _duration_.[[Milliseconds]], _duration_.[[Microseconds]], _duration_.[[Nanoseconds]]).
+        1. Perform ? RejectDurationSign(_duration_.[[Years]], _duration_.[[Months]], _duration_.[[Weeks]], _duration_.[[Days]], _duration_.[[Hours]], _duration_.[[Minutes]], _duration_.[[Seconds]], _duration_.[[Milliseconds]], _duration_.[[Microseconds]], _duration_.[[Nanoseconds]]).
         1. Let _balanceResult_ be ? BalanceDuration(_duration_.[[Days]], _duration_.[[Hours]], _duration_.[[Minutes]], _duration_.[[Seconds]], _duration_.[[Milliseconds]], _duration_.[[Microseconds]], _duration_.[[Nanoseconds]], *"days"*).
         1. Let _overflow_ be ? ToTemporalOverflow(_options_).
         1. Let _result_ be ? SubtractDate(_temporalDate_.[[ISOYear]], _temporalDate_.[[ISOMonth]], _temporalDate_.[[ISODay]], _duration_.[[Years]], _duration_.[[Months]], _duration_.[[Weeks]], _balanceResult_.[[Days]], _overflow_).
@@ -409,6 +421,7 @@
         The following steps are taken:
       </p>
       <emu-alg>
+        1. <mark>TODO: Handle calendar.</mark>
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
         1. Let _partialDate_ be ? ToPartialDate(_temporalDateLike_).
@@ -442,8 +455,11 @@
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
         1. Perform ? RequireInternalSlot(_other_, [[InitializedTemporalDate]]).
         1. Let _largestUnit_ be ? ToLargestTemporalUnit(_options_, « *"hours"*, *"minutes"*, *"seconds"*, *"milliseconds"*, *"microseconds"*, *"nanoseconds"* », *"days"*).
+        1. If ! CalendarToString(_temporalDate_) ≠ ! CalendarToString(_other_), then
+          1. Throw a *RangeError* exception.
         1. Let _result_ be ? DifferenceDate(_other_, _temporalDate_, _largestUnit_).
         1. Return ? CreateTemporalDuration(_result_.[[Years]], _result_.[[Months]], _result_.[[Weeks]], _result_.[[Days]], 0, 0, 0, 0, 0, 0).
+        1. <mark>TODO: defer to `calendar.dateDifference()`.</mark>
       </emu-alg>
     </emu-clause>
 
@@ -457,9 +473,10 @@
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
         1. Perform ? RequireInternalSlot(_other_, [[InitializedTemporalDate]]).
-        1. If _temporalDate_.[[Year]] ≠ _other_.[[Year]], return *false*.
-        1. If _temporalDate_.[[Month]] ≠ _other_.[[Month]], return *false*.
-        1. If _temporalDate_.[[Day]] ≠ _other_.[[Day]], return *false*.
+        1. If _temporalDate_.[[ISOYear]] ≠ _other_.[[ISOYear]], return *false*.
+        1. If _temporalDate_.[[ISOMonth]] ≠ _other_.[[ISOMonth]], return *false*.
+        1. If _temporalDate_.[[ISODay]] ≠ _other_.[[ISODay]], return *false*.
+        1. If ! CalendarToString(_temporalDate_) ≠ ! CalendarToString(_other_), return *false*.
         1. Return *true*.
       </emu-alg>
     </emu-clause>
@@ -474,11 +491,12 @@
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
         1. If _temporalTime_ is *undefined*, then
-          1. Return ? CreateTemporalDateTime(_temporalDate_.[[ISOYear]], _temporalDate_.[[ISOMonth]], _temporalDate_.[[ISODay]], 0, 0, 0, 0, 0, 0).
+          1. Return ? CreateTemporalDateTime(_temporalDate_.[[ISOYear]], _temporalDate_.[[ISOMonth]], _temporalDate_.[[ISODay]], 0, 0, 0, 0, 0, 0, _temporalDate_.[[Calendar]]).
         1. Perform ? RequireInternalSlot(_temporalTime_, [[InitializedTemporalTime]]).
         1. Return ? CreateTemporalDateTime(_temporalDate_.[[ISOYear]], _temporalDate_.[[ISOMonth]], _temporalDate_.[[ISODay]],
           _temporalTime_.[[Hour]], _temporalTime_.[[Minute]], _temporalTime_.[[Second]],
-          _temporalTime_.[[Millisecond]], _temporalTime_.[[Microsecond]], _temporalTime_.[[Nanosecond]]).
+          _temporalTime_.[[Millisecond]], _temporalTime_.[[Microsecond]], _temporalTime_.[[Nanosecond]],
+          _temporalDate_.[[Calendar]]).
       </emu-alg>
     </emu-clause>
 
@@ -781,8 +799,8 @@
         1. Set _month_ to ! ConstrainToRange(_month_, 1, 12).
         1. Set _day_ to ! ConstrainToRange(_day_, 1, ! DaysInMonth(_year_, _month_)).
         1. Return the Record {
-          [[Year]]: _yearMonth_.[[Year]],
-          [[Month]]: _yearMonth_.[[Month]],
+          [[Year]]: _year_,
+          [[Month]]: _month_,
           [[Day]]: _day_
           }.
       </emu-alg>

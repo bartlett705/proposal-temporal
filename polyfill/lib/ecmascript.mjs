@@ -505,7 +505,7 @@ export const ES = ObjectAssign({}, ES2019, {
     return ES.GetOption(options, 'largestUnit', [...allowed], fallback);
   },
   ToPartialRecord: (bag, fields) => {
-    if (!bag || 'object' !== typeof bag) return false;
+    if (ES.Type(bag) !== 'Object') return false;
     let any;
     for (const property of fields) {
       const value = bag[property];
@@ -513,8 +513,7 @@ export const ES = ObjectAssign({}, ES2019, {
         any = any || {};
         if (property === 'calendar') {
           // FIXME: this is terrible
-          const TemporalCalendar = GetIntrinsic('%Temporal.Calendar%');
-          any.calendar = TemporalCalendar.from(value);
+          any.calendar = ES.ToTemporalCalendar(value);
         } else if (property === 'era') {
           any.era = value;
         } else {
@@ -525,7 +524,7 @@ export const ES = ObjectAssign({}, ES2019, {
     return any ? any : false;
   },
   ToRecord: (bag, fields) => {
-    if (!bag || 'object' !== typeof bag) return false;
+    if (ES.Type(bag) !== 'Object') return false;
     const result = {};
     for (const fieldRecord of fields) {
       const [property, defaultValue] = fieldRecord;
@@ -538,8 +537,7 @@ export const ES = ObjectAssign({}, ES2019, {
       }
       if (property === 'calendar') {
         // FIXME: this is terrible
-        const TemporalCalendar = GetIntrinsic('%Temporal.Calendar%');
-        result.calendar = TemporalCalendar.from(value);
+        result.calendar = ES.ToTemporalCalendar(value);
       } else if (property === 'era') {
         result.era = ES.ToString(value);
       } else {
@@ -600,6 +598,13 @@ export const ES = ObjectAssign({}, ES2019, {
     }
     const identifier = ES.ToString(calendarLike);
     return ES.CalendarFrom(identifier);
+  },
+  CalendarToString: (calendar) => {
+    let toString = calendar.toString;
+    if (toString === undefined) {
+      toString = GetIntrinsic('%Temporal.Calendar.prototype.toString%');
+    }
+    return ES.ToString(ES.Call(toString, calendar));
   },
   TimeZoneFrom: (temporalTimeZoneLike) => {
     const TemporalTimeZone = GetIntrinsic('%Temporal.TimeZone%');
