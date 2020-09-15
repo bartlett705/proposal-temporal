@@ -88,7 +88,7 @@
           1. Let _string_ be ? ToString(_item_).
           1. Let _result_ be ? ParseTemporalDateString(_string_).
         1. Set _result_ to ? RegulateDate(_result_.[[Year]], _result_.[[Month]], _result_.[[Day]], _overflow_).
-        1. Return ? CreateTemporalDateFromStatic(_constructor_, _result_.[[Year]], _result_.[[Month]], _result_.[[Day]]).
+        1. Return ? CreateTemporalDateFromStatic(_constructor_, _result_.[[Year]], _result_.[[Month]], _result_.[[Day]], _result_.[[Calendar]]).
       </emu-alg>
     </emu-clause>
 
@@ -318,7 +318,8 @@
       <emu-alg>
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
-        1. Return ? CreateTemporalYearMonth(_temporalDate_.[[ISOYear]], _temporalDate_.[[ISOMonth]]).
+        1. Let _fields_ be ? TemporalDateFields(_temporalDate_).
+        1. Return ? YearMonthFromFields(_fields_, *"constrain"*, %Temporal.YearMonth%).
       </emu-alg>
     </emu-clause>
 
@@ -330,7 +331,8 @@
       <emu-alg>
         1. Let _temporalDate_ be the *this* value.
         1. Perform ? RequireInternalSlot(_temporalDate_, [[InitializedTemporalDate]]).
-        1. Return ? CreateTemporalMonthDay(_temporalDate_.[[ISOMonth]], _temporalDate_.[[ISODay]]).
+        1. Let _fields_ be ? TemporalDateFields(_temporalDate_).
+        1. Return ? MonthDayFromFields(_fields_, *"constrain"*, %Temporal.MonthDay%).
       </emu-alg>
     </emu-clause>
 
@@ -341,13 +343,7 @@
       </p>
       <emu-alg>
         1. Let _temporalDate_ be the *this* value.
-        1. Let _record_ be ? ToPartialDate(_temporalDate_).
-        1. Let _fields_ be ? ObjectCreate(%ObjectPrototype%).
-        1. For each row of <emu-xref href="#table-temporal-temporaldatelike-properties"></emu-xref>, except the header row, in table order, do
-          1. Let _p_ be the Property value of the current row.
-          1. Let _v_ be the value of _record_'s field whose name is the Internal Slot value of the current row.
-          1. Perform ! CreateDataPropertyOrThrow(_fields_, _p_, _v_).
-        1. Return _fields_.
+        1. Return ? TemporalDateFields(_temporalDate_).
       </emu-alg>
     </emu-clause>
 
@@ -925,6 +921,19 @@
         1. If _one_.[[ISODay]] &gt; _two_.[[ISODay]], return 1.
         1. If _one_.[[ISODay]] &lt; _two_.[[ISODay]], return -1.
         1. Return +0.
+      </emu-alg>
+    </emu-clause>
+
+    <emu-clause id="sec-temporal-temporaldatefields" aoid="TemporalDateFields">
+      <h1>TemporalDateFields ( _temporalDate_ )</h1>
+      <emu-alg>
+        1. Let _record_ be ? ToTemporalDateRecord(_temporalDate_).
+        1. Let _fields_ be ? ObjectCreate(%ObjectPrototype%).
+        1. For each row of <emu-xref href="#table-temporal-temporaldatelike-properties"></emu-xref>, except the header row, in table order, do
+          1. Let _p_ be the Property value of the current row.
+          1. Let _v_ be the value of _record_'s field whose name is the Internal Slot value of the current row.
+          1. Perform ! CreateDataPropertyOrThrow(_fields_, _p_, _v_).
+        1. Return _fields_.
       </emu-alg>
     </emu-clause>
   </emu-clause>
